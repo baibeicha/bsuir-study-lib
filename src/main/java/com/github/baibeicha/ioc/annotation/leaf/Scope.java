@@ -1,0 +1,14 @@
+package com.github.baibeicha.ioc.annotation.leaf;
+
+import com.github.baibeicha.ioc.leaf.LeafScope;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Scope {
+    LeafScope value() default LeafScope.SINGLETON;
+}

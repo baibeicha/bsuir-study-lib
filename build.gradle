@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'maven-publish'
+}
+
+group = 'com.github.baibeicha'
+version = '1.0.0'
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+        }
+    }
+}
+
+dependencies {
+
+}

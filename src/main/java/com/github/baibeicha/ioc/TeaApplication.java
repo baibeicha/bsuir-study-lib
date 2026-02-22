@@ -3,6 +3,7 @@ package com.github.baibeicha.ioc;
 import com.github.baibeicha.ioc.annotation.configuration.Configuration;
 import com.github.baibeicha.ioc.annotation.configuration.PackageScan;
 import com.github.baibeicha.ioc.annotation.configuration.TeaApplicationConfiguration;
+import com.github.baibeicha.ioc.application.config.BasicTeaApplicationConfiguration;
 import com.github.baibeicha.ioc.application.event.AppEvent;
 import com.github.baibeicha.ioc.application.event.EventType;
 import com.github.baibeicha.ioc.application.event.context.EventContext;
@@ -31,8 +32,8 @@ public class TeaApplication {
     protected final ContextConfiguration config;
     protected final ClassDependenciesScanner classDependenciesScanner;
 
-    protected boolean startTest = true;
-    protected boolean printTestResult = false;
+    public static boolean START_TEST = true;
+    public static boolean PRINT_TEST_RESULTS = true;
 
     public TeaApplication() {
         this.configClass = TeaApplicationContext.class;
@@ -125,8 +126,8 @@ public class TeaApplication {
 
     public static TeaApplication run(Class<?> configClass, boolean startTest, boolean printTestResult) {
         TeaApplication application = new TeaApplication(configClass);
-        application.startTest = startTest;
-        application.printTestResult = printTestResult;
+        application.START_TEST = startTest;
+        application.PRINT_TEST_RESULTS = printTestResult;
         application.run();
         return application;
     }
@@ -150,12 +151,11 @@ public class TeaApplication {
     }
 
     public TeaApplicationContext run() {
-        if (startTest) {
-            testEngine.test(printTestResult);
+        if (START_TEST) {
+            testEngine.test(PRINT_TEST_RESULTS);
         }
 
         eventContext.start();
-
         eventContext.findEvents(EventType.APPLICATION_STARTING)
                         .forEach(eventContext::registerEvent);
 
@@ -217,11 +217,12 @@ public class TeaApplication {
 
     protected void addConfigClassPackages() {
         TeaApplicationConfiguration applicationConfiguration =
-                configClass.getAnnotation(TeaApplicationConfiguration.class);
+                AnnotationUtils.findAnnotation(configClass, TeaApplicationConfiguration.class);
         String[] configClassPackages = applicationConfiguration.packages();
 
         Collections.addAll(config.packages, configClassPackages);
         config.packages.add(configClass.getPackage().getName());
+        config.packages.add(BasicTeaApplicationConfiguration.class.getPackageName());
     }
 
     protected void addFoundConfigsPackages() {
@@ -256,18 +257,18 @@ public class TeaApplication {
     }
 
     public void setStartTest(boolean test) {
-        startTest = test;
+        START_TEST = test;
     }
 
     public boolean isStartTest() {
-        return startTest;
+        return START_TEST;
     }
 
     public void setPrintTestResult(boolean print) {
-        printTestResult = print;
+        PRINT_TEST_RESULTS = print;
     }
 
     public boolean isPrintTestResult() {
-        return printTestResult;
+        return PRINT_TEST_RESULTS;
     }
 }

@@ -13,4 +13,6 @@ import java.lang.annotation.Target;
 public @interface Component {
     @AliasFor(annotation = TeaLeaf.class)
     String name() default "";
+    String initMethod() default "";
+    String destroyMethod() default "";
 }

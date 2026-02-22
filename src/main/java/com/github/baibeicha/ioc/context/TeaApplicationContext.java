@@ -14,6 +14,7 @@ import com.github.baibeicha.ioc.leaf.TeaLeaf;
 import com.github.baibeicha.ioc.reflection.ClassDependenciesScanner;
 import com.github.baibeicha.ioc.reflection.Dependency;
 import com.github.baibeicha.reflection.PackageScanner;
+import com.github.baibeicha.reflection.util.AnnotationUtils;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -243,7 +244,7 @@ public class TeaApplicationContext {
     protected String getDefinitionInitMethod(AnnotatedElement element) {
         String initMethodName = "init";
         com.github.baibeicha.ioc.annotation.leaf.TeaLeaf leaf =
-                element.getAnnotation(com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class);
+                AnnotationUtils.findAnnotation(element, com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class);
         if (!leaf.initMethod().isEmpty()) {
             initMethodName = leaf.initMethod();
         }
@@ -253,7 +254,7 @@ public class TeaApplicationContext {
     protected String getDefinitionDestroyMethod(AnnotatedElement element) {
         String destroyMethodName = "destroy";
         com.github.baibeicha.ioc.annotation.leaf.TeaLeaf leaf =
-                element.getAnnotation(com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class);
+                AnnotationUtils.findAnnotation(element, com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class);
         if (!leaf.destroyMethod().isEmpty()) {
             destroyMethodName = leaf.destroyMethod();
         }
@@ -264,7 +265,7 @@ public class TeaApplicationContext {
         name = name.substring(0, 1).toLowerCase() + name.substring(1);
 
         com.github.baibeicha.ioc.annotation.leaf.TeaLeaf leaf =
-                element.getAnnotation(com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class);
+                AnnotationUtils.findAnnotation(element, com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class);
 
         name = leaf.name().isEmpty() ? name : leaf.name();
         return name;
@@ -299,9 +300,10 @@ public class TeaApplicationContext {
     protected Set<Class<?>> findTeaLeafAnnotatedClasses() {
         Set<Class<?>> classes = new HashSet<>();
         for (String pack : config.packages) {
-            classes.addAll(packageScanner.findAllClassesWithAnnotation(
-                    pack, com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class)
+            Set<Class<?>> found = packageScanner.findAllClassesWithAnnotation(
+                    pack, com.github.baibeicha.ioc.annotation.leaf.TeaLeaf.class
             );
+            classes.addAll(found);
         }
         return classes;
     }

@@ -3,6 +3,8 @@ package com.github.baibeicha.ioc.reflection;
 import com.github.baibeicha.ioc.annotation.leaf.FillIn;
 import com.github.baibeicha.ioc.annotation.leaf.Qualifier;
 import com.github.baibeicha.ioc.reflection.exception.AnnotatedConstructorNotFoundException;
+import com.github.baibeicha.reflection.util.AnnotationUtils;
+import com.github.baibeicha.util.StringUtils;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
@@ -35,12 +37,14 @@ public class ClassDependenciesScanner {
             return constructors[0];
         } else {
             return Arrays.stream(constructors)
-                    .filter(constr -> constr.isAnnotationPresent(FillIn.class))
+                    .filter(constr -> AnnotationUtils.isAnnotated(constr, FillIn.class))
                     .findFirst()
                     .orElseThrow(() -> new AnnotatedConstructorNotFoundException(
-                            "You have more than 1 constructor (" + constructors.length +
-                                    ") in class " + clazz.getName()
-                    ));
+                                    StringUtils.format("You have more than 1 constructor ({}) in class {}",
+                                            constructors.length, clazz.getName()
+                                    )
+                            )
+                    );
         }
     }
 
@@ -72,7 +76,7 @@ public class ClassDependenciesScanner {
 
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-            if (field.isAnnotationPresent(FillIn.class)) {
+            if (AnnotationUtils.isAnnotated(field, FillIn.class)) {
                 field.setAccessible(true);
                 String qualifierName = qualifierName(field);
                 String fieldName = qualifierName == null ? field.getName() : qualifierName;
@@ -89,7 +93,7 @@ public class ClassDependenciesScanner {
         Set<Dependency> dependencies = new LinkedHashSet<>();
 
         List<Method> methods = Arrays.stream(clazz.getDeclaredMethods())
-                .filter(method -> method.isAnnotationPresent(FillIn.class))
+                .filter(method -> AnnotationUtils.isAnnotated(method, FillIn.class))
                 .toList();
         for (Method method : methods) {
             addMethodDependencies(dependencies, method);

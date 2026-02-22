@@ -2,6 +2,7 @@ package com.github.baibeicha.test;
 
 import com.github.baibeicha.collections.Pair;
 import com.github.baibeicha.reflection.PackageScanner;
+import com.github.baibeicha.reflection.util.AnnotationUtils;
 import com.github.baibeicha.test.annotation.Test;
 import com.github.baibeicha.test.annotation.TestConfiguration;
 import com.github.baibeicha.test.annotation.TestTarget;
@@ -217,8 +218,8 @@ public class TestEngine {
         };
 
         for (Class<?> foundClass : foundClasses) {
-            if (foundClass.isAnnotationPresent(TestTarget.class)) {
-                TestTarget testTarget = foundClass.getAnnotation(TestTarget.class);
+            if (AnnotationUtils.isAnnotated(foundClass, TestTarget.class)) {
+                TestTarget testTarget = AnnotationUtils.findAnnotation(foundClass, TestTarget.class);
                 String testName = testTarget.value().isEmpty() ? foundClass.getSimpleName() : testTarget.value();
                 testTargets.put(foundClass, testName);
                 testData.put(foundClass, new HashSet<>());
@@ -227,7 +228,7 @@ public class TestEngine {
     }
 
     protected List<Class<?>> findClasses() {
-        TestConfiguration testConfig = configClass.getAnnotation(TestConfiguration.class);
+        TestConfiguration testConfig = AnnotationUtils.findAnnotation(configClass, TestConfiguration.class);
         if (testConfig == null) {
             throw new TestConfigurationAnnotationNotFoundException(
                     "Not found @TestConfiguration annotation in " + configClass.getName()
@@ -267,8 +268,8 @@ public class TestEngine {
             Set<Pair<String, Method>> targetTestMethods = testData.get(target);
 
             for (Method method : methods) {
-                if (method.isAnnotationPresent(Test.class)) {
-                    Test test = method.getAnnotation(Test.class);
+                if (AnnotationUtils.isAnnotated(method, Test.class)) {
+                    Test test = AnnotationUtils.findAnnotation(method, Test.class);
                     String testName = testTargets.get(target) + TARGET_METHOD_SEPARATOR +
                             (test.value().isEmpty() ? method.getName() : test.value());
                     testMethods.put(testName, method);

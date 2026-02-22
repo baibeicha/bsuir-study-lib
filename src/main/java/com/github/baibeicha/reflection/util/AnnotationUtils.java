@@ -137,10 +137,10 @@ public class AnnotationUtils {
 
         for (Map.Entry<String, Method> entry : attributes.entrySet()) {
             try {
-                valueMap.put(entry.getKey(), entry.getValue().invoke(source));
+                valueMap.put(entry.getKey(), entry.getValue().invoke(annotationToSynthesize));
             } catch (Exception e) {
                 throw new IllegalStateException(
-                        StringUtils.format("Failed to read attribute {} from {}", entry.getKey(), source), e
+                        StringUtils.format("Failed to read attribute " + entry.getKey() + " from " + source), e
                 );
             }
         }

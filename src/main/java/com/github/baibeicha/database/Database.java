@@ -92,10 +92,11 @@ public class Database implements AutoCloseable {
     }
 
     /**
+     * SELECT запрос к бд.
      * @param sql SQL запрос.
      * @param targetClass тип сущности.
      * @param params параметры для вставки в запрос.
-     * @return Optional<T> полученной сущностей.
+     * @return полученная сущность или null.
      * @throws DatabaseException ошибка бд при более 1 сущности и др.
      */
     public <T> Optional<T> queryForObject(String sql, Class<T> targetClass, Object... params)
@@ -108,10 +109,11 @@ public class Database implements AutoCloseable {
     }
 
     /**
+     * SELECT запрос к бд.
      * @param sql SQL запрос.
      * @param targetClass тип сущности.
      * @param params параметры для вставки в запрос.
-     * @return List<T> полученных сущностей.
+     * @return список полученных сущностей.
      * @throws DatabaseException ошибка бд.
      */
     public <T> List<T> queryForList(String sql, Class<T> targetClass, Object... params)
@@ -123,6 +125,13 @@ public class Database implements AutoCloseable {
         }
     }
 
+    /**
+     * UPDATE запрос к бд.
+     * @param sql SQL запрос.
+     * @param params параметры для вставки.
+     * @return кол-во изменённых строк.
+     * @throws DatabaseException ошибка бд.
+     */
     public int update(String sql, Object... params) throws DatabaseException {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -138,7 +147,7 @@ public class Database implements AutoCloseable {
      * @param sql SQL запрос.
      * @param targetClass тип сущности.
      * @param params параметры для вставки в запрос.
-     * @return Optional<T> полученной сущностей.
+     * @return полученная сущность или null.
      * @throws DatabaseException ошибка бд при более 1 сущности и др.
      */
     public <T> Optional<T> queryForObject(Connection conn, String sql, Class<T> targetClass, Object... params)
@@ -158,7 +167,7 @@ public class Database implements AutoCloseable {
      * @param sql SQL запрос.
      * @param targetClass тип сущности.
      * @param params параметры для вставки в запрос.
-     * @return List<T> полученных сущностей.
+     * @return список полученных сущностей.
      * @throws DatabaseException ошибка бд.
      */
     public <T> List<T> queryForList(Connection conn, String sql, Class<T> targetClass, Object... params)
